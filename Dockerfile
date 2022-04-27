@@ -5,8 +5,6 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o /go-server
 
 FROM scratch
-#EXPOSE 8080
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=build /go-server /
-#COPY --from=build  /go/src/github.com/renjugeo/go-server/config/config.yaml /
 ENTRYPOINT [ "/go-server" ]

@@ -165,24 +165,6 @@ func (api *API) fetchUrls(urls []string) ([]Stats, error) {
 	return result, nil
 }
 
-func (api *API) fetch(url string) ([]byte, error) {
-	req, err := retryablehttp.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return nil, errors.Wrap(err, "error creating a new request")
-	}
-	req.Header.Add("Accept", "application/json")
-	resp, err := api.httpclient.Do(req)
-	if err != nil {
-		return nil, errors.Wrap(err, "error occurred when making http request")
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to read response body")
-	}
-	return body, nil
-}
-
 func (api *API) fetchUrl(url string) (*Stats, error) {
 	req, err := retryablehttp.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
