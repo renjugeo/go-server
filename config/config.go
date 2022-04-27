@@ -2,6 +2,7 @@ package config
 
 import (
 	"io/ioutil"
+	"time"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
@@ -45,7 +46,20 @@ func parseConfig(contents []byte) (*Configuration, error) {
 		return nil, errors.Wrap(err, "unable to decode config file contents")
 	}
 	SetDefaults(&cfg)
+	if err := validate(cfg); err != nil {
+		return nil, err
+	}
 	return &cfg, nil
+}
+
+func validate(cfg Configuration) error {
+	if _, err := time.ParseDuration(cfg.ReadTimeout); err != nil {
+		return errors.Wrap(err, "invalid readTimeout value")
+	}
+	if _, err := time.ParseDuration(cfg.WriteTimeout); err != nil {
+		return errors.Wrap(err, "invalid writeTimeout value")
+	}
+	return nil
 }
 
 func getFileContents(path string) ([]byte, error) {

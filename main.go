@@ -66,6 +66,7 @@ func run() int {
 				logger.Debug("error shuting down server")
 				return 1
 			}
+			logger.Debug("shutting down server...")
 			return 0
 		case <-srvc:
 			if err := srv.Close(); err != nil {

@@ -25,6 +25,9 @@ const (
 	DefaultLimit = "200"
 	SortKeyScore = "relevanceScore"
 	SortKeyViews = "views"
+
+	ErrorInvalidLimit   = "invalid value for limit"
+	ErrorInvalidSortKey = "sortKey should be either relevanceScore or views"
 )
 
 type API struct {
@@ -62,7 +65,7 @@ func (api *API) handleGetStats() http.HandlerFunc {
 			key = SortKeyScore
 		}
 		if key != SortKeyScore && key != SortKeyViews {
-			api.jsonResponse(w, APIErrorResponse{Message: "sortKey should be either relevanceScore or views", ErrorCode: 500})
+			api.jsonResponse(w, APIErrorResponse{Message: ErrorInvalidSortKey, ErrorCode: 500})
 			return
 		}
 		// get and validate views
@@ -72,7 +75,7 @@ func (api *API) handleGetStats() http.HandlerFunc {
 		}
 		l, err := strconv.Atoi(limit)
 		if err != nil {
-			api.jsonResponse(w, APIErrorResponse{Message: "invalid value for limit", ErrorCode: 500})
+			api.jsonResponse(w, APIErrorResponse{Message: ErrorInvalidLimit, ErrorCode: 500})
 			return
 		}
 		resp, err := api.getStats(key, l)
@@ -151,7 +154,6 @@ func (api *API) fetchUrls(urls []string) ([]Stats, error) {
 		}(urls[i])
 	}
 	wg.Wait()
-	api.logger.Debug("result map = ", zap.Any("map", resultMap))
 	for _, url := range urls {
 		data, ok := resultMap[url]
 		if !ok {

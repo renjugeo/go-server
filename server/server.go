@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -29,7 +30,7 @@ func NewServer(api *api.API, cfg *config.Configuration, logger *zap.Logger) *htt
 	}
 	return &http.Server{
 		Handler:      h,
-		Addr:         ":8080",
+		Addr:         fmt.Sprintf("%s:%s", cfg.Address, cfg.Port),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}

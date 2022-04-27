@@ -61,3 +61,15 @@ func TestParseConfigWithValues(t *testing.T) {
 	assert.NotEmpty(t, cfg.StatsEnpoints)
 	assert.Equal(t, cfg.CacheResults, true)
 }
+
+func TestParseInvalidConfigWithValues(t *testing.T) {
+	testcfg := &Configuration{
+		ReadTimeout:  "20",
+		WriteTimeout: "20",
+	}
+	c, err := yaml.Marshal(testcfg)
+	assert.ErrorIs(t, err, nil)
+
+	_, err = parseConfig(c)
+	assert.Error(t, err)
+}
