@@ -1,0 +1,8 @@
+logLevel: debug
+port: "8080"
+address: "0.0.0.0"
+cacheResults: true
+statsEndpoints:
+  - "https://raw.githubusercontent.com/assignment132/assignment/main/wikipedia.json"
+  - "https://raw.githubusercontent.com/assignment132/assignment/main/google.json"
+  - "https://raw.githubusercontent.com/assignment132/assignment/main/duckduckgo.json"
