@@ -37,7 +37,7 @@ func TestParseConfigWithValues(t *testing.T) {
 		StatsUri:     "/stats",
 		ReadTimeout:  "20s",
 		WriteTimeout: "20s",
-		StatsEnpoints: []string{
+		StatsEndpoints: []string{
 			"www.url1.com",
 			"www.url2.com",
 		},
@@ -58,7 +58,7 @@ func TestParseConfigWithValues(t *testing.T) {
 	assert.Equal(t, cfg.StatsUri, "/stats")
 	assert.Equal(t, cfg.ReadTimeout, "20s")
 	assert.Equal(t, cfg.WriteTimeout, "20s")
-	assert.NotEmpty(t, cfg.StatsEnpoints)
+	assert.NotEmpty(t, cfg.StatsEndpoints)
 	assert.Equal(t, cfg.CacheResults, true)
 }
 

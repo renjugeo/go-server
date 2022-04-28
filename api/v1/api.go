@@ -8,11 +8,13 @@ import (
 	"sort"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/pkg/errors"
 	"github.com/renjugeo/go-server/config"
+	"github.com/renjugeo/go-server/localcache"
 	"github.com/renjugeo/go-server/util"
 	"go.uber.org/zap"
 )
@@ -33,10 +35,11 @@ const (
 type API struct {
 	logger     *zap.Logger
 	cfg        *config.Configuration
+	cache      localcache.LocalCacheProvider
 	httpclient *retryablehttp.Client
 }
 
-func NewV1API(cfg *config.Configuration, logger *zap.Logger) *API {
+func NewV1API(cfg *config.Configuration, cp localcache.LocalCacheProvider, logger *zap.Logger) *API {
 	if logger == nil {
 		logger, _ = util.GetLogger(cfg)
 	}
@@ -45,6 +48,7 @@ func NewV1API(cfg *config.Configuration, logger *zap.Logger) *API {
 	return &API{
 		logger:     logger,
 		cfg:        cfg,
+		cache:      cp,
 		httpclient: cli,
 	}
 }
@@ -54,7 +58,7 @@ func (api *API) SetHttpClient(client *http.Client) {
 }
 
 func (api *API) RegisterPaths(r *mux.Router) {
-	r.HandleFunc(fmt.Sprintf("%s/stats", pathPrefix), api.handleGetStats()).Methods(http.MethodGet)
+	r.HandleFunc(fmt.Sprintf("%s%s", pathPrefix, api.cfg.StatsUri), api.handleGetStats()).Methods(http.MethodGet)
 }
 
 func (api *API) handleGetStats() http.HandlerFunc {
@@ -99,15 +103,32 @@ func (api *API) jsonResponse(w http.ResponseWriter, data interface{}) {
 }
 
 func (api *API) getStats(key string, limit int) (*APIResponse, error) {
-	urls := api.cfg.StatsEnpoints
-	st, err := api.fetchUrls(urls)
-	if err != nil {
-		return nil, err
-	}
+	var (
+		aggregated []EndpointStat
+		st         []Stats
+		err        error
+	)
+	urls := api.cfg.StatsEndpoints
 
-	aggregated := []EndpointStat{}
-	for _, v := range st {
-		aggregated = append(aggregated, v.Data...)
+	if api.cfg.CacheResults && api.cache != nil {
+		value, ok := api.cache.Get(SortKey)
+		if ok {
+			aggregated = value.([]EndpointStat)
+			api.logger.Debug("using cache to return results")
+		}
+	}
+	if aggregated == nil {
+		st, err = api.fetchUrls(urls)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, v := range st {
+			aggregated = append(aggregated, v.Data...)
+		}
+		if api.cfg.CacheResults && api.cache != nil {
+			api.cache.Set(SortKey, aggregated, 1*time.Minute)
+		}
 	}
 
 	if key == SortKeyScore {

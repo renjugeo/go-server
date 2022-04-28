@@ -46,7 +46,7 @@ func TestFetchUrlSuccess(t *testing.T) {
 		w.Write([]byte(resp))
 	}))
 	defer ts.Close()
-	api := NewV1API(c, logger)
+	api := NewV1API(c, nil, logger)
 	stats, err := api.fetchUrl(ts.URL)
 	if err != nil {
 		t.Fatalf("expected err to be nil, got %v", err)
@@ -89,9 +89,9 @@ func TestGetStatsSuccess(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.Write([]byte(resp))
 	}))
-	c.StatsEnpoints = []string{ts.URL}
+	c.StatsEndpoints = []string{ts.URL}
 	defer ts.Close()
-	api := NewV1API(c, logger)
+	api := NewV1API(c, nil, logger)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/stats?sortKey=relevanceScore&limit=2", nil)
 	w := httptest.NewRecorder()
@@ -143,9 +143,9 @@ func TestGetStatsByViewsSuccess(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.Write([]byte(resp))
 	}))
-	c.StatsEnpoints = []string{ts.URL}
+	c.StatsEndpoints = []string{ts.URL}
 	defer ts.Close()
-	api := NewV1API(c, logger)
+	api := NewV1API(c, nil, logger)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/stats?sortKey=views&limit=3", nil)
 	w := httptest.NewRecorder()
@@ -168,7 +168,7 @@ func TestGetStatsInvalidLimit(t *testing.T) {
 	c := &config.Configuration{}
 	config.SetDefaults(c)
 	logger, _ := util.GetLogger(c)
-	api := NewV1API(c, logger)
+	api := NewV1API(c, nil, logger)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/stats?sortKey=views&limit=abc", nil)
 	w := httptest.NewRecorder()
@@ -189,7 +189,7 @@ func TestGetStatsInvalidSortKey(t *testing.T) {
 	c := &config.Configuration{}
 	config.SetDefaults(c)
 	logger, _ := util.GetLogger(c)
-	api := NewV1API(c, logger)
+	api := NewV1API(c, nil, logger)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/stats?sortKey=something&limit=2", nil)
 	w := httptest.NewRecorder()
@@ -245,9 +245,9 @@ func TestGetStatsRetrySuccess(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.Write([]byte(resp))
 	}))
-	c.StatsEnpoints = []string{ts.URL}
+	c.StatsEndpoints = []string{ts.URL}
 	defer ts.Close()
-	api := NewV1API(c, logger)
+	api := NewV1API(c, nil, logger)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/stats?sortKey=views&limit=3", nil)
 	w := httptest.NewRecorder()
@@ -305,9 +305,9 @@ func TestGetStatsRetryError(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.Write([]byte(resp))
 	}))
-	c.StatsEnpoints = []string{ts.URL}
+	c.StatsEndpoints = []string{ts.URL}
 	defer ts.Close()
-	api := NewV1API(c, logger)
+	api := NewV1API(c, nil, logger)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/stats?sortKey=views&limit=3", nil)
 	w := httptest.NewRecorder()

@@ -20,16 +20,16 @@ const (
 )
 
 type Configuration struct {
-	LogLevel      string   `yaml:"logLevel,omitempty"`
-	StatsEnpoints []string `yaml:"statsEndpoints,omitempty"`
-	ReadTimeout   string   `yaml:"readTimeout,omitempty"`
-	WriteTimeout  string   `yaml:"writeTimeout,omitempty"`
-	LogFormat     string   `yaml:"logFormat,omitempty"`
-	HealthUri     string   `yaml:"healthUri,omitempty"`
-	StatsUri      string   `yaml:"statsUri,omitempty"`
-	Port          string   `yaml:"port,omitempty"`
-	Address       string   `yaml:"address,omitempty"`
-	CacheResults  bool     `yaml:"cacheResults,omitempty"`
+	LogLevel       string   `yaml:"logLevel,omitempty"`
+	StatsEndpoints []string `yaml:"statsEndpoints,omitempty"`
+	ReadTimeout    string   `yaml:"readTimeout,omitempty"`
+	WriteTimeout   string   `yaml:"writeTimeout,omitempty"`
+	LogFormat      string   `yaml:"logFormat,omitempty"`
+	HealthUri      string   `yaml:"healthUri,omitempty"`
+	StatsUri       string   `yaml:"statsUri,omitempty"`
+	Port           string   `yaml:"port,omitempty"`
+	Address        string   `yaml:"address,omitempty"`
+	CacheResults   bool     `yaml:"cacheResults,omitempty"`
 }
 
 func ParseConfig(path string) (*Configuration, error) {

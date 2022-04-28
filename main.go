@@ -10,6 +10,7 @@ import (
 
 	"github.com/renjugeo/go-server/api"
 	"github.com/renjugeo/go-server/config"
+	"github.com/renjugeo/go-server/localcache"
 	"github.com/renjugeo/go-server/server"
 	"github.com/renjugeo/go-server/util"
 	"go.uber.org/zap"
@@ -44,7 +45,12 @@ func run() int {
 	// Listen for interrupts
 	signal.Notify(term, os.Interrupt, syscall.SIGTERM, syscall.SIGHUP)
 
-	api := api.NewAPI(cfg, logger)
+	// setup localcache
+	expirationTime := 2 * time.Minute
+	lc := localcache.NewLocalCacheProvider(expirationTime)
+
+	// create api instance
+	api := api.NewAPI(cfg, lc, logger)
 
 	// create server instance
 	srv := server.NewServer(api, cfg, logger)
